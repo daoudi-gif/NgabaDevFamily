@@ -1,0 +1,360 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<!-- <body onload="isEqual()" id="main"> -->
+
+<body onload="startGame()" id="main">
+
+</body>
+<script>
+
+    class Quizz {
+
+        greetingText = "WELCOME TO STARTER QUIZZ";
+
+        btnClickToStart = "Click to start";
+
+
+        mainStyle = `
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #eaeaea;   
+`;
+
+        quizzContainerStyle = `
+    display : flex;
+    background: blue;
+    width: 50%;
+    align-text: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    flex-direction: column;
+    padding: 10px; 
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    height: 500px;
+    border-radius:  20px; 
+`;
+
+        startButtonStyling = `
+height: 3rem;
+width: 8rem;
+border: none;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+font-size: 1rem;
+color: #fff;
+background: purple;
+font-weight: 800;`
+
+        questionBlockStyle = `
+
+`;
+        constructor(questionArray) {
+            // currentQuestion, previousQuestion and nextQuestion are objects of the class Question.
+            console.log(questionArray);
+
+            this.score = 0;
+            this.questionCount = 0;
+            this.mainComponent = document.getElementById("main");
+            this.quizContainer = document.createElement("div");
+            this.questionsArray = questionArray;
+            this.userResponser = [];
+            this.numberOfQuestion = 10;
+        }
+
+
+        start() {
+            // const main = document.getElementById("main");
+            this.mainComponent.style.cssText = this.mainStyle;
+
+            this.quizContainer.style.cssText = this.quizzContainerStyle;
+
+
+            // heading
+            const heading = document.createElement("h3");
+            heading.style.cssText = this.headingStyle;
+            heading.innerHTML = this.greetingText;
+
+            // button to start the game
+            const startBtn = document.createElement("button");
+            startBtn.type = "button";
+            startBtn.textContent = this.btnClickToStart;
+            startBtn.style.cssText = this.startButtonStyling;
+            startBtn.addEventListener("click", () => {
+                this.DisplayQuestion(1, this.quizContainer);
+            });
+
+            this.quizContainer.appendChild(heading);
+            this.quizContainer.appendChild(startBtn);
+            this.mainComponent.appendChild(this.quizContainer);
+        }
+
+        DisplayQuestion(number, quizContainer) {
+            this.questionCount += 1;
+            console.log("question");
+            this.userResponser = [];
+            // question block
+            // const question = this.questionsArray[number];
+            const question = {
+                questionNumber: this.questionsArray[number].questionNumber,
+                question: this.questionsArray[number].question,
+                answers: this.questionsArray[number].answers,
+                correctAnswer: this.questionsArray[number].correct_answer
+            }
+            // console.log(question);
+            console.log(question);
+
+            // questionNumber
+            const questionNumber = document.createElement("div");
+            questionNumber.innerHTML = question.questionNumber;
+            // question label
+            const questionLabel = document.createElement("div");
+            questionLabel.innerHTML = question.question;
+
+            // quesion plus question number
+            const questionAndNumber = document.createElement('div');
+            questionAndNumber.style.cssText = `font-size: 2rem; display: flex; flex-direction: row;`;
+            questionAndNumber.appendChild(questionNumber);
+            questionAndNumber.appendChild(questionLabel);
+
+            const answerBlock = document.createElement("div");
+
+            // for (const item of question.answers) {
+            for (let i = 0; i < question.answers.length; i++) {
+                console.log(question.answers[i]);
+
+                const answerBlockItem = document.createElement('button');
+                answerBlockItem.textContent = question.answers[i];
+                answerBlockItem.addEventListener("click", () => {
+                    this.userResponser.push(question.answers[i])
+                    console.log(question.answers[i]);
+
+                })
+                answerBlock.append(answerBlockItem);
+            }
+            this.EmptyQuizContainer(quizContainer);
+            // this.quizContainer.remove();
+
+            const validateResponse = document.createElement("button");
+            validateResponse.type = "button";
+            validateResponse.textContent = "Submit";
+            validateResponse.addEventListener("click", () => {
+                console.log("Submitted");
+                console.log(question.correctAnswer);
+                console.log(this.userResponser);
+                console.log(this.userResponser == question.correctAnswer);
+
+                if (this.isEqual(question.correctAnswer, this.userResponser)) {
+                    this.score = this.score + 1;
+                    score.innerHTML = this.score;
+                    if (this.questionCount === this.numberOfQuestion) {
+                        this.EndGame();
+                    } else {
+                        this.DisplayQuestion(number + 1, quizContainer);
+                    }
+
+                }
+                if (this.questionCount === this.numberOfQuestion) {
+                    this.EndGame();
+                } else {
+                    this.DisplayQuestion(number + 1, quizContainer);
+                }
+            })
+
+            const scoreBlock = document.createElement("div");
+            const score = document.createElement("div");
+            score.innerHTML = this.score;
+            const totalQuestions = document.createElement("div");
+            totalQuestions.innerHTML = "/ " + this.numberOfQuestion;
+            scoreBlock.appendChild(score);
+            scoreBlock.appendChild(totalQuestions);
+
+
+
+            this.quizContainer.appendChild(questionAndNumber);
+            this.quizContainer.appendChild(answerBlock);
+            this.quizContainer.appendChild(scoreBlock);
+            this.quizContainer.appendChild(validateResponse);
+
+        }
+
+        isEqual(arr1, arr2) {
+            let result = true;
+            if (arr1.length === arr2.length) {
+                for (let i = 0; i < arr1.length; i++) { // Corrected loop condition
+                    if (arr1[i] !== arr2[i]) {
+                        result = false;
+                        break;
+                    }
+                }
+            } else {
+                result = false;
+            }
+            return result;
+        }
+
+        StartQuiz() {
+            this.DisplayQuestion();
+        }
+
+        EndGame() {
+            const endgameLabel = document.createElement('div');
+            endgameLabel.innerHTML = "End of game";
+            this.EmptyQuizContainer(this.quizContainer);
+            this.quizContainer.appendChild(endgameLabel)
+            console.log("End of game")
+        }
+
+        EmptyQuizContainer(quizContainer) {
+            while (quizContainer.firstChild) {
+                quizContainer.removeChild(quizContainer.firstChild);
+            }
+        }
+
+    }
+
+    function startGame() {
+        const questionsArray = [
+            {
+                "questionNumber": "0",
+                "question": "Which of the following is used to define a function in Python?",
+                "answers": ["function", "def", "define", "fn"],
+                "correct_answer": ["def"]
+            },
+            {
+                "questionNumber": "1",
+                "question": "What is the output of 'print(type(5.0))'?",
+                "answers": ["<class 'float'>", "<class 'int'>", "<class 'str'>", "<class 'double'>"],
+                "correct_answer": ["<class 'float'>"]
+            },
+            {
+                "questionNumber": "2",
+                "question": "Which of the following is a mutable data type in Python?",
+                "answers": ["tuple", "list", "string", "int"],
+                "correct_answer": ["list"]
+            },
+            {
+                "questionNumber": "3",
+                "question": "What is the output of 'print(2 ** 3)'?",
+                "answers": ["6", "8", "9", "5"],
+                "correct_answer": ["8"]
+            },
+            {
+                "questionNumber": "4",
+                "question": "Which method is used to add an item to the end of a list?",
+                "answers": ["append()", "add()", "insert()", "extend()"],
+                "correct_answer": ["append()"]
+            },
+            {
+                "questionNumber": "5",
+                "question": "What does the 'len()' function do?",
+                "answers": ["Returns the size of a list", "Returns the length of a string", "Counts characters in a string", "All of the above"],
+                "correct_answer": ["All of the above"]
+            },
+            {
+                "questionNumber": "6",
+                "question": "How can you create a comment in Python?",
+                "answers": ["// comment", "# comment", "/* comment */", "<!-- comment -->"],
+                "correct_answer": ["# comment"]
+            },
+            {
+                "questionNumber": "7",
+                "question": "What is the output of 'print(10 // 3)'?",
+                "answers": ["3.333", "3", "3.0", "Error"],
+                "correct_answer": ["3"]
+            },
+            {
+                "questionNumber": "8",
+                "question": "What keyword is used to create a class in Python?",
+                "answers": ["class", "def", "object", "new"],
+                "correct_answer": ["class"]
+            },
+            {
+                "questionNumber": "9",
+                "question": "What is the correct way to open a file for reading in Python?",
+                "answers": ["open('file.txt', 'r')", "open('file.txt', 'w')", "open('file.txt', 'read')", "open('file.txt', 'rw')"],
+                "correct_answer": ["open('file.txt', 'r')"]
+            },
+            {
+                "questionNumber": "10",
+                "question": "What is the output of 'print(type([]))'?",
+                "answers": ["<class 'tuple'>", "<class 'list'>", "<class 'dict'>", "<class 'set'>"],
+                "correct_answer": ["<class 'list'>"]
+            },
+            {
+                "questionNumber": "11",
+                "question": "Which method is used to remove whitespace from the beginning and end of a string?",
+                "answers": ["strip()", "trim()", "cut()", "clear()"],
+                "correct_answer": ["strip()"]
+            },
+            {
+                "questionNumber": "12",
+                "question": "What is the difference between '==' and 'is' in Python?",
+                "answers": [
+                    "'==' checks for equality, 'is' checks for identity",
+                    "'==' checks for identity, 'is' checks for equality",
+                    "Both are the same",
+                    "Both are not used in Python"
+                ],
+                "correct_answer": ["'==' checks for equality, 'is' checks for identity"]
+            },
+            {
+                "questionNumber": "13",
+                "question": "How do you create an empty dictionary in Python?",
+                "answers": ["{}", "[]", "dict()", "empty{}"],
+                "correct_answer": ["{}"]
+            },
+            {
+                "questionNumber": "14",
+                "question": "Which of the following is a Python keyword?",
+                "answers": ["for", "foreach", "lambda", "void"],
+                "correct_answer": ["for", "lambda"]
+            },
+            {
+                "questionNumber": "15",
+                "question": "What will be the output of 'print(bool(0))'?",
+                "answers": ["True", "False", "Error", "None"],
+                "correct_answer": ["False"]
+            },
+            {
+                "questionNumber": "16",
+                "question": "Which library is used for data manipulation and analysis in Python?",
+                "answers": ["numpy", "pandas", "scipy", "matplotlib"],
+                "correct_answer": ["pandas"]
+            },
+            {
+                "questionNumber": "17",
+                "question": "Which function is used to get the ASCII value of a character in Python?",
+                "answers": ["ord()", "ascii()", "chr()", "ord_val()"],
+                "correct_answer": ["ord()"]
+            },
+            {
+                "questionNumber": "18",
+                "question": "How can you copy a list in Python without referencing the original?",
+                "answers": ["list.copy()", "list[:]", "copy(list)", "All of the above"],
+                "correct_answer": ["All of the above"]
+            },
+            {
+                "questionNumber": "19",
+                "question": "What will be the output of 'print('Hello' + 'World')'?",
+                "answers": ["Hello World", "HelloWorld", "Hello+World", "Error"],
+                "correct_answer": ["HelloWorld"]
+            }
+        ];
+        const quizz = new Quizz(questionsArray);
+        quizz.start();
+    }
+</script>
+
+</html>
